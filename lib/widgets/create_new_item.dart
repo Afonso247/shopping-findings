@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 
+import 'package:http/http.dart' as http;
+
 import 'package:findings/data/categories.dart';
-import 'package:findings/models/grocery_item.dart';
+// import 'package:findings/models/grocery_item.dart';
 
 class CreateNewItem extends StatefulWidget {
   const CreateNewItem({super.key});
@@ -16,17 +19,40 @@ class _CreateNewItemState extends State<CreateNewItem> {
   var _enteredQuantity = 1;
   var _selectedCategory = categories.entries.first.value;
 
-  void _submitForm() {
+  void _submitForm() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      Navigator.of(context).pop(
-        GroceryItem(
-          id: DateTime.now().toString(),
-          name: _enteredName,
-          quantity: _enteredQuantity,
-          category: _selectedCategory,
-        ),
+      final url = Uri.https(
+        'flutter-testing-f9db5-default-rtdb.firebaseio.com',
+        'shopping-list.json',
       );
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'name': _enteredName,
+          'quantity': _enteredQuantity,
+          'category': _selectedCategory.title,
+        }),
+      );
+
+      // if (response.statusCode >= 400) {
+      //   ScaffoldMessenger.of(context).clearSnackBars();
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //     SnackBar(
+      //       content: Text('Houve um erro. Tente novamente'),
+      //       action: SnackBarAction(
+      //         label: 'Fechar',
+      //         onPressed: () => ScaffoldMessenger.of(context).hideCurrentSnackBar,
+      //       ),
+      //     ),
+      //   );
+      //   return;
+      // }
+
+      if (!context.mounted) return;
+
+      Navigator.of(context).pop();
     }
   }
 
@@ -84,9 +110,7 @@ class _CreateNewItemState extends State<CreateNewItem> {
                 Expanded(
                   child: DropdownButtonFormField(
                     initialValue: _selectedCategory,
-                    decoration: const InputDecoration(
-                      label: Text('Categoria'),
-                    ),
+                    decoration: const InputDecoration(label: Text('Categoria')),
                     items: [
                       for (final category in categories.entries)
                         DropdownMenuItem(
