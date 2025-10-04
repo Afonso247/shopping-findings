@@ -11,10 +11,14 @@ class CreateNewItem extends StatefulWidget {
 
 class _CreateNewItemState extends State<CreateNewItem> {
   final _formKey = GlobalKey<FormState>();
+  var _enteredName = '';
+  var _enteredQuantity = 1;
+  var _selectedCategory = categories.entries.first.value;
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+      debugPrint('$_enteredName, $_enteredQuantity, $_selectedCategory');
     }
   }
 
@@ -39,6 +43,9 @@ class _CreateNewItemState extends State<CreateNewItem> {
                 }
                 return null;
               },
+              onSaved: (value) {
+                _enteredName = value!;
+              },
             ),
             Row(
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -49,7 +56,7 @@ class _CreateNewItemState extends State<CreateNewItem> {
                       label: Text('Quantidade'),
                     ),
                     keyboardType: TextInputType.number,
-                    initialValue: '1',
+                    initialValue: _enteredQuantity.toString(),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'A quantidade não pode ser vazia';
@@ -60,11 +67,18 @@ class _CreateNewItemState extends State<CreateNewItem> {
                       }
                       return null;
                     },
+                    onSaved: (value) {
+                      _enteredQuantity = int.parse(value!);
+                    },
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: DropdownButtonFormField(
+                    initialValue: _selectedCategory,
+                    decoration: const InputDecoration(
+                      label: Text('Categoria'),
+                    ),
                     items: [
                       for (final category in categories.entries)
                         DropdownMenuItem(
@@ -83,7 +97,9 @@ class _CreateNewItemState extends State<CreateNewItem> {
                         ),
                     ],
                     onChanged: (value) {
-                      // Your code here
+                      setState(() {
+                        _selectedCategory = value!;
+                      });;
                     },
                   ),
                 ),
