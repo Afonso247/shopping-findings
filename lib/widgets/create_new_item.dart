@@ -20,6 +20,16 @@ class _CreateNewItemState extends State<CreateNewItem> {
             TextFormField(
               maxLength: 50,
               decoration: const InputDecoration(label: Text('Nome')),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'O nome não pode ser vazio';
+                } else if (value.trim().length < 3) {
+                  return 'O nome deve ter pelo menos 3 caracteres';
+                } else if (value.trim().length > 50) {
+                  return 'Houve um erro. Tente novamente';
+                }
+                return null;
+              },
             ),
             Row(
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -31,6 +41,16 @@ class _CreateNewItemState extends State<CreateNewItem> {
                     ),
                     keyboardType: TextInputType.number,
                     initialValue: '1',
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'A quantidade não pode ser vazia';
+                      } else if (int.tryParse(value) == null) {
+                        return 'Houve um erro. Tente novamente';
+                      } else if (int.tryParse(value)! <= 0) {
+                        return 'A quantidade deve ser maior que zero';
+                      }
+                      return null;
+                    },
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -57,6 +77,25 @@ class _CreateNewItemState extends State<CreateNewItem> {
                       // Your code here
                     },
                   ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextButton(
+                  onPressed: () {
+                    // Your code here
+                  },
+                  child: const Text('Apagar dados'),
+                ),
+                const SizedBox(width: 12),
+                ElevatedButton(
+                  onPressed: () {
+                    // Your code here
+                  },
+                  child: const Text('Salvar'),
                 ),
               ],
             ),
