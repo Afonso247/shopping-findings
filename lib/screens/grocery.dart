@@ -31,7 +31,7 @@ class _GroceryState extends State<Grocery> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Grocery List'),
+        title: const Text('Lista de Compras'),
         actions: [
           IconButton(
             onPressed: groceryItemsAdd,
