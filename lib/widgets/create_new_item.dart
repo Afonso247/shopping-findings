@@ -10,11 +10,20 @@ class CreateNewItem extends StatefulWidget {
 }
 
 class _CreateNewItemState extends State<CreateNewItem> {
+  final _formKey = GlobalKey<FormState>();
+
+  void _submitForm() {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8),
       child: Form(
+        key: _formKey,
         child: Column(
           children: [
             TextFormField(
@@ -86,15 +95,13 @@ class _CreateNewItemState extends State<CreateNewItem> {
               children: [
                 TextButton(
                   onPressed: () {
-                    // Your code here
+                    _formKey.currentState!.reset();
                   },
-                  child: const Text('Apagar dados'),
+                  child: const Text('Reset'),
                 ),
                 const SizedBox(width: 12),
                 ElevatedButton(
-                  onPressed: () {
-                    // Your code here
-                  },
+                  onPressed: _submitForm,
                   child: const Text('Salvar'),
                 ),
               ],
