@@ -1,43 +1,41 @@
 import 'package:flutter/material.dart';
 
-class GroceryList extends StatefulWidget {
-  const GroceryList({super.key, required this.groceryItems});
+import 'package:findings/models/grocery_item.dart';
 
-  final List groceryItems;
+class GroceryList extends StatelessWidget {
+  const GroceryList({
+    super.key,
+    required this.groceryItems,
+    required this.onRemoveItem,
+  });
 
-  @override
-  State<GroceryList> createState() => _GroceryListState();
-}
+  final List<GroceryItem> groceryItems;
+  final void Function(int index) onRemoveItem;
 
-// TODO: rework no widget.groceryItems no uso do backend
-class _GroceryListState extends State<GroceryList> {
-  void _removeItem(int index) {
-    final removedItem = widget.groceryItems[index];
+  void _removeItem(int index, BuildContext context) {
+    final removedItem = groceryItems[index];
 
-    setState(() {
-      widget.groceryItems.removeAt(index);
-    });
+    onRemoveItem(index);
 
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('${removedItem.name} removido'),
         duration: const Duration(seconds: 3),
-        action: SnackBarAction(
-          label: 'Desfazer',
-          onPressed: () {
-            setState(() {
-              widget.groceryItems.insert(index, removedItem);
-            });
-          },
-        ),
+        // action: SnackBarAction(
+        //   label: 'Desfazer',
+        //   onPressed: () {
+        //     // Recarrega a lista do servidor para restaurar o item
+        //     setState(() {});
+        //   },
+        // ),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.groceryItems.isEmpty) {
+    if (groceryItems.isEmpty) {
       return const Center(
         child: Text(
           'Nenhum item na lista.\nAdicione seus produtos!',
@@ -48,9 +46,9 @@ class _GroceryListState extends State<GroceryList> {
     }
 
     return ListView.builder(
-      itemCount: widget.groceryItems.length,
+      itemCount: groceryItems.length,
       itemBuilder: (context, index) => Dismissible(
-        key: ValueKey(widget.groceryItems[index]),
+        key: ValueKey(groceryItems[index].id),
         background: Container(
           color: Colors.red,
           alignment: Alignment.centerRight,
@@ -58,15 +56,15 @@ class _GroceryListState extends State<GroceryList> {
           child: const Icon(Icons.delete, color: Colors.white, size: 30),
         ),
         direction: DismissDirection.endToStart,
-        onDismissed: (direction) => _removeItem(index),
+        onDismissed: (direction) => _removeItem(index, context),
         child: ListTile(
-          title: Text(widget.groceryItems[index].name),
+          title: Text(groceryItems[index].name),
           leading: Container(
             width: 24,
             height: 24,
-            color: widget.groceryItems[index].category.color,
+            color: groceryItems[index].category.color,
           ),
-          trailing: Text(widget.groceryItems[index].quantity.toString()),
+          trailing: Text(groceryItems[index].quantity.toString()),
         ),
       ),
     );

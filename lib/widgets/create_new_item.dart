@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:findings/data/categories.dart';
-// import 'package:findings/models/grocery_item.dart';
+import 'package:findings/models/grocery_item.dart';
 
 class CreateNewItem extends StatefulWidget {
   const CreateNewItem({super.key});
@@ -50,9 +50,22 @@ class _CreateNewItemState extends State<CreateNewItem> {
       //   return;
       // }
 
+      // O Realtime DB retorna: {"name":"-Mxyz..."} em POST
+      final responseData = json.decode(response.body) as Map<String, dynamic>?;
+      final generatedId = responseData != null && responseData['name'] != null
+          ? responseData['name'] as String
+          : DateTime.now().toIso8601String();
+
+      final createdItem = GroceryItem(
+        id: generatedId,
+        name: _enteredName,
+        quantity: _enteredQuantity,
+        category: _selectedCategory,
+      );
+
       if (!context.mounted) return;
 
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(createdItem);
     }
   }
 
