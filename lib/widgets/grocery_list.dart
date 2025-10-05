@@ -45,12 +45,23 @@ class GroceryList extends StatelessWidget {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(12.0),
-          child: Text(
-            hasError.isNotEmpty
-                ? hasError // err handling
-                : 'Nenhum item na lista.\nAdicione seus produtos!',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 16, color: Colors.grey),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.shopping_cart,
+                size: 80,
+                color: Colors.grey,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                hasError.isNotEmpty
+                    ? hasError // err handling
+                    : 'Nenhum item na lista.\nAdicione seus produtos!',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16, color: Colors.grey),
+              ),
+            ],
           ),
         ),
       );
