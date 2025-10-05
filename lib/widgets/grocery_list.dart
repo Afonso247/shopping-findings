@@ -41,12 +41,15 @@ class GroceryList extends StatelessWidget {
   Widget build(BuildContext context) {
     if (groceryItems.isEmpty) {
       return Center(
-        child: Text(
-          hasError.isNotEmpty
-              ? hasError // err handling
-              : 'Nenhum item na lista.\nAdicione seus produtos!',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 16, color: Colors.grey),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Text(
+            hasError.isNotEmpty
+                ? hasError // err handling
+                : 'Nenhum item na lista.\nAdicione seus produtos!',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+          ),
         ),
       );
     }
