@@ -53,15 +53,6 @@ class _GroceryState extends State<Grocery> {
     });
   }
 
-  void groceryItemsAdd() async {
-    final newItem = await Navigator.of(context).push<GroceryItem>(
-      MaterialPageRoute(builder: (context) => const NewItem()),
-    );
-    if (newItem != null) {
-      _loadItems();
-    }
-  }
-
   void _removeItem(int index) async {
     final item = _groceryItems[index];
 
@@ -125,6 +116,15 @@ class _GroceryState extends State<Grocery> {
           ),
         );
       }
+    }
+  }
+
+  void groceryItemsAdd() async {
+    final newItem = await Navigator.of(context).push<GroceryItem>(
+      MaterialPageRoute(builder: (context) => const NewItem()),
+    );
+    if (newItem != null) {
+      _loadItems();
     }
   }
 
