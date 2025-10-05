@@ -10,6 +10,7 @@ import 'package:findings/screens/new_item.dart';
 
 class Grocery extends StatefulWidget {
   const Grocery({super.key});
+
   @override
   State<Grocery> createState() => _GroceryState();
 }
@@ -91,6 +92,42 @@ class _GroceryState extends State<Grocery> {
     }
   }
 
+  void _restoreItem(int index, GroceryItem item) async {
+    setState(() {
+      _groceryItems.insert(index, item);
+    });
+
+    // Recria o item no Firebase
+    final url = Uri.https(
+      'flutter-testing-f9db5-default-rtdb.firebaseio.com',
+      'shopping-list/${item.id}.json',
+    );
+
+    final response = await http.put(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'name': item.name,
+        'quantity': item.quantity,
+        'category': item.category.title,
+      }),
+    );
+
+    if (response.statusCode >= 400) {
+      // Se houver erro ao restaurar no Firebase, remove da UI novamente
+      setState(() {
+        _groceryItems.removeAt(index);
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Erro ao restaurar item. Tente novamente.'),
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -102,7 +139,11 @@ class _GroceryState extends State<Grocery> {
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : GroceryList(groceryItems: _groceryItems, onRemoveItem: _removeItem),
+          : GroceryList(
+              groceryItems: _groceryItems,
+              onRemoveItem: _removeItem,
+              onRestoreItem: _restoreItem,
+            ),
     );
   }
 }

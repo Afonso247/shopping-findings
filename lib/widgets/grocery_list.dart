@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:findings/models/grocery_item.dart';
 
 class GroceryList extends StatelessWidget {
@@ -7,13 +6,16 @@ class GroceryList extends StatelessWidget {
     super.key,
     required this.groceryItems,
     required this.onRemoveItem,
+    required this.onRestoreItem,
   });
 
   final List<GroceryItem> groceryItems;
   final void Function(int index) onRemoveItem;
+  final void Function(int index, GroceryItem item) onRestoreItem;
 
   void _removeItem(int index, BuildContext context) {
     final removedItem = groceryItems[index];
+    final removedIndex = index;
 
     onRemoveItem(index);
 
@@ -22,13 +24,12 @@ class GroceryList extends StatelessWidget {
       SnackBar(
         content: Text('${removedItem.name} removido'),
         duration: const Duration(seconds: 3),
-        // action: SnackBarAction(
-        //   label: 'Desfazer',
-        //   onPressed: () {
-        //     // Recarrega a lista do servidor para restaurar o item
-        //     setState(() {});
-        //   },
-        // ),
+        action: SnackBarAction(
+          label: 'Desfazer',
+          onPressed: () {
+            onRestoreItem(removedIndex, removedItem);
+          },
+        ),
       ),
     );
   }
