@@ -31,9 +31,10 @@ class _GroceryState extends State<Grocery> {
       'shopping-list.json',
     );
     final response = await http.get(url);
-    debugPrint(response.body);
+
     final Map<String, dynamic> listData = json.decode(response.body);
     final List<GroceryItem> loadedItems = [];
+
     for (final item in listData.entries) {
       final category = categories.entries.firstWhere(
         (catItem) => catItem.value.title == item.value['category'],
@@ -47,6 +48,7 @@ class _GroceryState extends State<Grocery> {
         ),
       );
     }
+
     setState(() {
       _groceryItems = loadedItems;
       _isLoading = false;
@@ -124,7 +126,9 @@ class _GroceryState extends State<Grocery> {
       MaterialPageRoute(builder: (context) => const NewItem()),
     );
     if (newItem != null) {
-      _loadItems();
+      setState(() {
+        _groceryItems.add(newItem);
+      });
     }
   }
 
