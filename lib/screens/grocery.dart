@@ -142,7 +142,19 @@ class _GroceryState extends State<Grocery> {
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text(
+                    'Carregando suas compras...',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ],
+              ),
+            )
           : GroceryList(
               groceryItems: _groceryItems,
               onRemoveItem: _removeItem,
