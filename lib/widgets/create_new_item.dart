@@ -18,10 +18,16 @@ class _CreateNewItemState extends State<CreateNewItem> {
   var _enteredName = '';
   var _enteredQuantity = 1;
   var _selectedCategory = categories.entries.first.value;
+  var _isSending = false;
 
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+
+      setState(() {
+        _isSending = true;
+      });
+
       final url = Uri.https(
         'flutter-testing-f9db5-default-rtdb.firebaseio.com',
         'shopping-list.json',
@@ -155,15 +161,23 @@ class _CreateNewItemState extends State<CreateNewItem> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TextButton(
-                  onPressed: () {
-                    _formKey.currentState!.reset();
-                  },
+                  onPressed: _isSending
+                      ? null
+                      : () {
+                          _formKey.currentState!.reset();
+                        },
                   child: const Text('Reset'),
                 ),
                 const SizedBox(width: 12),
                 ElevatedButton(
-                  onPressed: _submitForm,
-                  child: const Text('Salvar'),
+                  onPressed: _isSending ? null : _submitForm,
+                  child: _isSending
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(),
+                        )
+                      : const Text('Salvar'),
                 ),
               ],
             ),
