@@ -31,44 +31,52 @@ class _GroceryState extends State<Grocery> {
       'flutter-testing-f9db5-default-rtdb.firebaseio.com',
       'shopping-list.json',
     );
-    final response = await http.get(url);
 
-    if (response.statusCode >= 400) {
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode >= 400) {
+        setState(() {
+          _isLoading = false;
+          _error = 'Ocorreu um erro ao carregar as compras. Tente novamente!';
+        });
+        return;
+      }
+
+      if (response.body == 'null') {
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
+
+      final Map<String, dynamic> listData = json.decode(response.body);
+      final List<GroceryItem> loadedItems = [];
+
+      for (final item in listData.entries) {
+        final category = categories.entries.firstWhere(
+          (catItem) => catItem.value.title == item.value['category'],
+        );
+        loadedItems.add(
+          GroceryItem(
+            id: item.key,
+            name: item.value['name'],
+            quantity: item.value['quantity'],
+            category: category.value,
+          ),
+        );
+      }
+
+      setState(() {
+        _groceryItems = loadedItems;
+        _isLoading = false;
+      });
+    } catch (error) {
       setState(() {
         _isLoading = false;
-        _error = 'Ocorreu um erro ao carregar as compras. Tente novamente';
+        _error = 'Ocorreu um erro ao carregar as compras. Tente novamente!';
       });
-      return;
     }
-
-    if (response.body == 'null') {
-      setState(() {
-        _isLoading = false;
-      });
-      return;
-    }
-
-    final Map<String, dynamic> listData = json.decode(response.body);
-    final List<GroceryItem> loadedItems = [];
-
-    for (final item in listData.entries) {
-      final category = categories.entries.firstWhere(
-        (catItem) => catItem.value.title == item.value['category'],
-      );
-      loadedItems.add(
-        GroceryItem(
-          id: item.key,
-          name: item.value['name'],
-          quantity: item.value['quantity'],
-          category: category.value,
-        ),
-      );
-    }
-
-    setState(() {
-      _groceryItems = loadedItems;
-      _isLoading = false;
-    });
   }
 
   Future<bool> _removeItem(int index) async {

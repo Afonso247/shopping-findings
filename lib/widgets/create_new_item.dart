@@ -32,46 +32,75 @@ class _CreateNewItemState extends State<CreateNewItem> {
         'flutter-testing-f9db5-default-rtdb.firebaseio.com',
         'shopping-list.json',
       );
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          'name': _enteredName,
-          'quantity': _enteredQuantity,
-          'category': _selectedCategory.title,
-        }),
-      );
 
-      // if (response.statusCode >= 400) {
-      //   ScaffoldMessenger.of(context).clearSnackBars();
-      //   ScaffoldMessenger.of(context).showSnackBar(
-      //     SnackBar(
-      //       content: Text('Houve um erro. Tente novamente'),
-      //       action: SnackBarAction(
-      //         label: 'Fechar',
-      //         onPressed: () => ScaffoldMessenger.of(context).hideCurrentSnackBar,
-      //       ),
-      //     ),
-      //   );
-      //   return;
-      // }
+      try {
+        final response = await http.post(
+          url,
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode({
+            'name': _enteredName,
+            'quantity': _enteredQuantity,
+            'category': _selectedCategory.title,
+          }),
+        );
 
-      // O Realtime DB retorna: {"name":"-Mxyz..."} em POST
-      final responseData = json.decode(response.body) as Map<String, dynamic>?;
-      final generatedId = responseData != null && responseData['name'] != null
-          ? responseData['name'] as String
-          : DateTime.now().toIso8601String();
+        if (response.statusCode >= 400) {
+          setState(() {
+            _isSending = false;
+          });
 
-      final createdItem = GroceryItem(
-        id: generatedId,
-        name: _enteredName,
-        quantity: _enteredQuantity,
-        category: _selectedCategory,
-      );
+          if (!context.mounted) return;
 
-      if (!context.mounted) return;
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Houve um erro. Tente novamente!'),
+              action: SnackBarAction(
+                label: 'Fechar',
+                onPressed: () =>
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar(),
+              ),
+            ),
+          );
+          return;
+        }
 
-      Navigator.of(context).pop(createdItem);
+        // O Realtime DB retorna: {"name":"-Mxyz..."} em POST
+        final responseData =
+            json.decode(response.body) as Map<String, dynamic>?;
+        final generatedId = responseData != null && responseData['name'] != null
+            ? responseData['name'] as String
+            : DateTime.now().toIso8601String();
+
+        final createdItem = GroceryItem(
+          id: generatedId,
+          name: _enteredName,
+          quantity: _enteredQuantity,
+          category: _selectedCategory,
+        );
+
+        if (!context.mounted) return;
+
+        Navigator.of(context).pop(createdItem);
+      } catch (error) {
+        setState(() {
+          _isSending = false;
+        });
+
+        if (!context.mounted) return;
+
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Houve um erro. Tente novamente!'),
+            action: SnackBarAction(
+              label: 'Fechar',
+              onPressed: () =>
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar(),
+            ),
+          ),
+        );
+      }
     }
   }
 
