@@ -18,6 +18,7 @@ class Grocery extends StatefulWidget {
 class _GroceryState extends State<Grocery> {
   List<GroceryItem> _groceryItems = [];
   bool _isLoading = true;
+  String _error = '';
 
   @override
   void initState() {
@@ -31,6 +32,14 @@ class _GroceryState extends State<Grocery> {
       'shopping-list.json',
     );
     final response = await http.get(url);
+
+    if (response.statusCode >= 400) {
+      setState(() {
+        _isLoading = false;
+        _error = 'Ocorreu um erro ao carregar as compras. Tente novamente';
+      });
+      return;
+    }
 
     final Map<String, dynamic> listData = json.decode(response.body);
     final List<GroceryItem> loadedItems = [];
@@ -159,6 +168,7 @@ class _GroceryState extends State<Grocery> {
               groceryItems: _groceryItems,
               onRemoveItem: _removeItem,
               onRestoreItem: _restoreItem,
+              hasError: _error,
             ),
     );
   }

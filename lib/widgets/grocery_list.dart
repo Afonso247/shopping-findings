@@ -7,11 +7,14 @@ class GroceryList extends StatelessWidget {
     required this.groceryItems,
     required this.onRemoveItem,
     required this.onRestoreItem,
+    required this.hasError,
   });
 
+  final String hasError;
   final List<GroceryItem> groceryItems;
   final void Function(int index) onRemoveItem;
   final void Function(int index, GroceryItem item) onRestoreItem;
+
 
   void _removeItem(int index, BuildContext context) {
     final removedItem = groceryItems[index];
@@ -37,9 +40,11 @@ class GroceryList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (groceryItems.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
-          'Nenhum item na lista.\nAdicione seus produtos!',
+          hasError.isNotEmpty
+              ? hasError // err handling
+              : 'Nenhum item na lista.\nAdicione seus produtos!',
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 16, color: Colors.grey),
         ),
