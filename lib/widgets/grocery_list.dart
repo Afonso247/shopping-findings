@@ -12,15 +12,17 @@ class GroceryList extends StatelessWidget {
 
   final String hasError;
   final List<GroceryItem> groceryItems;
-  final void Function(int index) onRemoveItem;
+  final Future<bool> Function(int index) onRemoveItem;
   final void Function(int index, GroceryItem item) onRestoreItem;
 
 
-  void _removeItem(int index, BuildContext context) {
+  void _removeItem(int index, BuildContext context) async {
     final removedItem = groceryItems[index];
     final removedIndex = index;
 
-    onRemoveItem(index);
+    bool isRemoved = await onRemoveItem(index);
+
+    if (!isRemoved) return;
 
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(

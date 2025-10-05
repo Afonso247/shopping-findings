@@ -64,7 +64,7 @@ class _GroceryState extends State<Grocery> {
     });
   }
 
-  void _removeItem(int index) async {
+  Future<bool> _removeItem(int index) async {
     final item = _groceryItems[index];
 
     setState(() {
@@ -86,12 +86,19 @@ class _GroceryState extends State<Grocery> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Erro ao remover item. Tente novamente.'),
+          SnackBar(
+            content: Text('Erro ao remover item.'),
+            action: SnackBarAction(
+              label: 'Fechar',
+              onPressed: () =>
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar,
+            ),
           ),
         );
       }
+      return false;
     }
+    return true;
   }
 
   void _restoreItem(int index, GroceryItem item) async {
@@ -122,8 +129,12 @@ class _GroceryState extends State<Grocery> {
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Erro ao restaurar item. Tente novamente.'),
+          SnackBar(
+            content: Text('Erro ao restaurar item.'),
+            action: SnackBarAction(
+              label: 'Fechar',
+              onPressed: ScaffoldMessenger.of(context).hideCurrentSnackBar,
+            ),
           ),
         );
       }
